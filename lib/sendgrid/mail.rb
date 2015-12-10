@@ -103,10 +103,6 @@ module SendGrid
       @headers[header_name] = header_value
     end
 
-    def headers
-      @headers ||= {}
-    end
-
     def attachments
       @attachments ||= []
     end
@@ -153,12 +149,13 @@ module SendGrid
         :'x-smtpapi' => smtpapi_json,
         :content => ({":default"=>"0"} unless contents.empty?),
         :files => ({":default"=>"0"} unless attachments.empty? and contents.empty?),
-        :headers => headers
         # If I don't define a default value, I get a Nil error when
         # in attachments.each do |file|
         #:files => ({} unless attachments.empty?)
       }.reject {|_, v| v.nil? || v.empty?}
-
+      
+      payload[:headers] = @headers.to_json if @headers.any?
+      
       payload.delete(:'x-smtpapi') if payload[:'x-smtpapi'] == '{}'
 
       payload[:to] = payload[:from] if payload[:to].nil? and not smtpapi.to.empty?
