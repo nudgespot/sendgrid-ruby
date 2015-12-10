@@ -99,6 +99,7 @@ module SendGrid
     end
 
     def add_header(header_name,header_value)
+      @headers ||= {}
       @headers[header_name] = header_value
     end
 
