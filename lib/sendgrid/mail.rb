@@ -5,7 +5,8 @@ require 'mimemagic'
 module SendGrid
   class Mail
     attr_accessor :to, :to_name, :from, :from_name, :subject, :text, :html, :cc, :cc_name,
-                  :bcc, :bcc_name, :reply_to, :date, :smtpapi, :attachments, :content, :template
+                  :bcc, :bcc_name, :reply_to, :date, :smtpapi, :attachments, :content, :template,
+                  :headers
 
     def initialize(params = {})
       params.each do |k, v|
@@ -97,6 +98,10 @@ module SendGrid
       attachments << {file: file, name: name}
     end
 
+    def add_header(header_name,header_value)
+      @headers[header_name] = header_value
+    end
+
     def headers
       @headers ||= {}
     end
@@ -146,7 +151,8 @@ module SendGrid
         :html => html,
         :'x-smtpapi' => smtpapi_json,
         :content => ({":default"=>"0"} unless contents.empty?),
-        :files => ({":default"=>"0"} unless attachments.empty? and contents.empty?)
+        :files => ({":default"=>"0"} unless attachments.empty? and contents.empty?),
+        :headers => headers
         # If I don't define a default value, I get a Nil error when
         # in attachments.each do |file|
         #:files => ({} unless attachments.empty?)
