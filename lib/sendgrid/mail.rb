@@ -102,6 +102,10 @@ module SendGrid
       @headers ||= {}
       @headers[header_name] = header_value
     end
+    
+    def headers
+      @headers || {}
+    end
 
     def attachments
       @attachments ||= []
@@ -154,7 +158,7 @@ module SendGrid
         #:files => ({} unless attachments.empty?)
       }.reject {|_, v| v.nil? || v.empty?}
       
-      payload[:headers] = @headers.to_json if @headers.any?
+      payload[:headers] = headers.to_json if headers.any?
       
       payload.delete(:'x-smtpapi') if payload[:'x-smtpapi'] == '{}'
 
